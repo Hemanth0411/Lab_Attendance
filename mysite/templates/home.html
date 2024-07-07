@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.htm' %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+{% block content %}
+<body>
+<h1 class="text-center"> Student Details from DataBase </h1>
+    <hr>
+    <br>
+    <table class="table table-bordered">
+    {% for student in students %}
+    <tr>
+        <td>{{ student.id }}</td>
+        <td>{{ student.first_name }}</td>
+        <td>{{ student.last_name }}</td>
+        <td> <a class="btn btn-primary" role="button" href="{% url 'student' student.id %}">Click Me </a> </td>
+    </tr>
+    {% endfor %}
+    </table>
+</body>
+{% endblock %}
+</html>
