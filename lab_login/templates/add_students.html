@@ -2,6 +2,50 @@
 <html>
 <head>
     <title>Add Students</title>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var yearField = document.querySelector('select[name="year"]');
+    var batchField = document.querySelector('select[name="batch"]');
+
+    function updateBatchOptions() {
+        var year = yearField.value;
+        var batchChoices;
+
+        if (year == '3') {
+            batchChoices = ['A', 'B', 'C'];
+        } else {
+            batchChoices = ['A', 'B', 'C', 'D'];
+        }
+
+        batchField.innerHTML = '';  // Clear existing options
+        batchField.disabled = false; // Enable batch field
+        batchChoices.forEach(function(batch) {
+            var option = document.createElement('option');
+            option.value = batch;
+            option.text = batch;
+            batchField.add(option);
+        });
+
+        // If the batch field was previously selected, keep it selected
+        if (batchField.dataset.previousValue) {
+            batchField.value = batchField.dataset.previousValue;
+        } else {
+            batchField.selectedIndex = 0;  // Select the first option by default
+        }
+    }
+
+    yearField.addEventListener('change', function() {
+        updateBatchOptions();
+        // Save the selected value for batch field (if any)
+        batchField.dataset.previousValue = batchField.value;
+    });
+
+    // Initialize batch options based on the current year selection
+    updateBatchOptions();
+});
+</script>
+
+
 </head>
 <body>
     <h2>Add Students</h2>

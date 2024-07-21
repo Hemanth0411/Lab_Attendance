@@ -30,7 +30,8 @@ def add_students(request):
             form.save()
             return redirect('student_list')
     else:
-        form = StudentForm()
+        year = request.GET.get('year', None)  # Get year from query params
+        form = StudentForm(year=year)
     return render(request, 'add_students.html', {'form': form})
 
 def edit_student(request, roll_no):
@@ -41,7 +42,7 @@ def edit_student(request, roll_no):
             form.save()
             return redirect('student_list')
     else:
-        form = StudentForm(instance=student)
+        form = StudentForm(instance=student, year=student.year)
     return render(request, 'edit_student.html', {'form': form})
 
 def delete_student(request, roll_no):
