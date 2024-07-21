@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Students</title>
+    <title>Edit Student</title>
 </head>
 <body>
-    <h2>Add Students</h2>
+    <h2>Edit Student</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save Student</button>
+        <button type="submit">Update Student</button>
     </form>
     <a href="{% url 'student_list' %}">Back to Student List</a>
 </body>

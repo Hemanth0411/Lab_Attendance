@@ -1,4 +1,3 @@
-<!-- templates/admin_login.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,5 +10,6 @@
         {{ form.as_p }}
         <button type="submit">Login</button>
     </form>
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
 </body>
 </html>

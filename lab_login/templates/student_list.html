@@ -2,6 +2,17 @@
 <html>
 <head>
     <title>Student List</title>
+    <script>
+        function confirmDelete(studentRollNo) {
+            if (confirm("Are you sure you want to delete this student?")) {
+                if (studentRollNo) {
+                    window.location.href = `/monitor/delete-student/${studentRollNo}/`;
+                } else {
+                    alert('Invalid student roll number.');
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <h2>Student List</h2>
@@ -9,21 +20,28 @@
         <thead>
             <tr>
                 <th>Roll No</th>
-                <th>Name</th>
+                <th>First Name</th>
+                <th>Last Name</th>
                 <th>DOB</th>
                 <th>Batch</th>
                 <th>Year</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {% for student in students %}
-                <tr>
-                    <td>{{ student.roll_no }}</td>
-                    <td>{{ student.name }}</td>
-                    <td>{{ student.dob }}</td>
-                    <td>{{ student.batch }}</td>
-                    <td>{{ student.year }}</td>
-                </tr>
+            <tr>
+                <td>{{ student.roll_no }}</td>
+                <td>{{ student.first_name }}</td>
+                <td>{{ student.last_name }}</td>
+                <td>{{ student.dob }}</td>
+                <td>{{ student.batch }}</td>
+                <td>{{ student.year }}</td>
+                <td>
+                    <button onclick="confirmDelete('{{ student.roll_no }}')">Delete</button>
+                    <a href="{% url 'edit_student' student.roll_no %}">Edit</a>
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
