@@ -25,12 +25,13 @@ def admin_dashboard(request):
 
 def add_students(request):
     if request.method == 'POST':
-        form = StudentForm(request.POST)
+        year = request.POST.get('year')  # Get year from POST data
+        form = StudentForm(request.POST, year=year)
         if form.is_valid():
             form.save()
             return redirect('student_list')
     else:
-        year = request.GET.get('year', None)  # Get year from query params
+        year = request.GET.get('year', None)
         form = StudentForm(year=year)
     return render(request, 'add_students.html', {'form': form})
 

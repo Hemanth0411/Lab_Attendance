@@ -11,7 +11,7 @@ class StudentForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ['roll_no', 'first_name', 'last_name', 'dob','year', 'batch']
+        fields = ['roll_no', 'first_name', 'last_name', 'dob', 'year', 'batch']
         widgets = {
             'dob': forms.DateInput(attrs={'type': 'date'})  # Date picker for easier DOB selection
         }
