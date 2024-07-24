@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Recorded Successfully</title>
+</head>
+<body>
+    <h1>Attendance Recorded Successfully</h1>
+    <p>The attendance has been recorded for the selected students.</p>
+    <a href="{% url 'record_attendance' %}">Record More Attendance</a><br>
+    <a href="{% url 'attendance_summary' %}">Attendance Summary</a><br>
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

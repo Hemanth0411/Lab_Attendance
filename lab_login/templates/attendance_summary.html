@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Summary</title>
+</head>
+<body>
+    <h1>Attendance Summary</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ year_batch_form.as_p }}
+        <button type="submit" name="filter_students">Filter Students</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Student</th>
+                <th>C Language</th>
+                <th>IT</th>
+                <th>DS</th>
+                <th>OS</th>
+                <th>Java</th>
+                <th>DBMS</th>
+                <th>Python</th>
+                <th>WT</th>
+                <th>R</th>
+                <th>CD</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student, subjects in attendance_data %}
+            <tr>
+                <td>{{ student.roll_no }}</td>
+                <td>{{ student.first_name }} {{ student.last_name }}</td>
+                <td>{% if subjects.C_Language > 0 %}{{ subjects.C_Language }}{% endif %}</td>
+                <td>{% if subjects.IT > 0 %}{{ subjects.IT }}{% endif %}</td>
+                <td>{% if subjects.DS > 0 %}{{ subjects.DS }}{% endif %}</td>
+                <td>{% if subjects.OS > 0 %}{{ subjects.OS }}{% endif %}</td>
+                <td>{% if subjects.Java > 0 %}{{ subjects.Java }}{% endif %}</td>
+                <td>{% if subjects.DBMS > 0 %}{{ subjects.DBMS }}{% endif %}</td>
+                <td>{% if subjects.Python > 0 %}{{ subjects.Python }}{% endif %}</td>
+                <td>{% if subjects.WT > 0 %}{{ subjects.WT }}{% endif %}</td>
+                <td>{% if subjects.R > 0 %}{{ subjects.R }}{% endif %}</td>
+                <td>{% if subjects.CD > 0 %}{{ subjects.CD }}{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+ <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>
+
+
+       
