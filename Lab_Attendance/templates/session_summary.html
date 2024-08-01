@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Session Summary</title>
+</head>
+<body>
+    <h1>Session Summary</h1>
+
+    <!-- Form to filter sessions -->
+    <form method="post" action="{% url 'session_summary' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Filter Sessions</button>
+    </form>
+
+    <!-- Display session data in a table -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Subject</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session in sessions %}
+            <tr>
+                <td>{{ session.student.roll_no }}</td>
+                <td>{{ session.student.name }}</td>
+                <td>{{ session.date }}</td>
+                <td>{{ session.subject.name }}</td>
+                <td>{{ session.in_time }}</td>
+                <td>{{ session.out_time }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No session data available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

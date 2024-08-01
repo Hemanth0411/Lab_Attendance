@@ -11,5 +11,5 @@ urlpatterns = [
     path('record_attendance/', views.record_attendance, name='record_attendance'),
     path('attendance_summary/', views.attendance_summary, name='attendance_summary'),
     path('attendance/success/', views.attendance_success, name='attendance_success'),
+    path('session-summary/', views.session_summary, name='session_summary'),
 ]
-"""path('attendance_success/', views.attendance_success, name='attendance_success'),"""

@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['lab_login\\monitor\\models.py', 'lab_login\\templates\\attendance_summary.html', 'lab_login\\monitor\\forms.py', 'lab_login\\monitor\\views.py', 'lab_login\\templates\\record_attendance.html', 'lab_login\\templates\\student_list.html', 'lab_login\\templates\\attendance_success.html', 'lab_login\\lab_login\\settings.py', 'lab_login\\lab_login\\urls.py', 'lab_login\\monitor\\admin.py', 'chandhu\\subway\\admin.py', 'chandhu\\subway\\apps.py', 'chandhu\\subway\\models.py', 'chandhu\\subway\\views.py']
+recent_files = ['Lab_Attendance\\templates\\attendance_success.html', 'Lab_Attendance\\templates\\edit_student.html', 'Lab_Attendance\\templates\\student_list.html', 'Lab_Attendance\\monitor\\models.py', 'Lab_Attendance\\monitor\\forms.py', 'Lab_Attendance\\templates\\add_students.html', 'Lab_Attendance\\monitor\\migrations\\0001_initial.py']
 
 [main]
 version = 0.2.0

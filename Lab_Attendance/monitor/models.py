@@ -18,17 +18,10 @@ class Subject(models.Model):
         return self.name
     
 class Student(models.Model):
-    roll_no = models.CharField(
-        max_length=12,
-        unique=True,
-        primary_key=True,
-        validators=[validate_roll_no]
-    )
-    first_name = models.CharField(max_length=50, default='N/A')  # Default value provided
-    last_name = models.CharField(max_length=50, default='N/A')   # Default value provided
-    dob = models.DateField()
-    batch = models.CharField(max_length=20, default='N/A')       # Default value provided
-    year = models.IntegerField(default=2024)                      # Default value provided
+    roll_no = models.CharField(max_length=12, primary_key=True, unique=True, validators=[validate_roll_no])
+    name = models.CharField(default='N/A', max_length=100)
+    year = models.CharField(default='2024-28', max_length=10)
+    batch = models.CharField(default='A', max_length=5)
     c_language_attendance = models.IntegerField(default=0)
     it_attendance = models.IntegerField(default=0)
     ds_attendance = models.IntegerField(default=0)
@@ -39,12 +32,41 @@ class Student(models.Model):
     wt_attendance = models.IntegerField(default=0)
     r_attendance = models.IntegerField(default=0)
     cd_attendance = models.IntegerField(default=0)
+    sd_attendance = models.IntegerField(default=0)
+    dv_attendance = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.name}"
 
 class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
+
+class Session(models.Model):
+    IN_TIME_CHOICES = [
+        ('09:30', '9:30'),
+        ('10:30', '10:30'),
+        ('12:00', '12:00'),
+        ('14:00', '2:00'),
+        ('15:00', '3:00')
+    ]
+    
+    OUT_TIME_CHOICES = [
+        ('10:30', '10:30'),
+        ('11:30', '11:30'),
+        ('13:00', '1:00'),
+        ('15:00', '3:00'),
+        ('16:00', '4:00')
+    ]
+    
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, default=1)  # Link to Student
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    date = models.DateField()
+    in_time = models.CharField(max_length=5, choices=IN_TIME_CHOICES)
+    out_time = models.CharField(max_length=5, choices=OUT_TIME_CHOICES)
+
+    def __str__(self):
+        return f"{self.student.roll_no} - {self.subject} - {self.date}"
+    
     

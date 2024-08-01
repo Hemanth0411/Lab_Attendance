@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import StudentForm, AttendanceForm, YearBatchForm
-from .models import Student, Subject, Attendance
+from .forms import StudentForm, AttendanceForm, YearBatchForm, SessionFilterForm
+from .models import Student, Subject, Attendance, Session
 import logging
 from django.contrib import messages
 
@@ -16,9 +16,15 @@ def admin_login(request):
             if user is not None:
                 login(request, user)
                 return redirect('admin_dashboard')
+            else:
+                form.add_error(None, 'Invalid username or password')
+        else:
+            print(form.errors)  # Print errors to console for debugging
     else:
         form = AuthenticationForm()
+        
     return render(request, 'admin_login.html', {'form': form})
+
 
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
@@ -34,6 +40,7 @@ def add_students(request):
         year = request.GET.get('year', None)
         form = StudentForm(year=year)
     return render(request, 'add_students.html', {'form': form})
+
 
 def edit_student(request, roll_no):
     student = get_object_or_404(Student, roll_no=roll_no)
@@ -64,59 +71,6 @@ def delete_student(request, roll_no):
     student.delete()
     return redirect('student_list')
 
-
-logger = logging.getLogger(__name__)
-
-"""def record_attendance(request):
-    year_batch_form = YearBatchForm()
-    students = None
-    attendance_form = AttendanceForm()
-
-    if request.method == 'POST':
-        if 'filter_students' in request.POST:
-            year_batch_form = YearBatchForm(request.POST)
-            if year_batch_form.is_valid():
-                year = year_batch_form.cleaned_data['year']
-                batch = year_batch_form.cleaned_data['batch']
-                students = Student.objects.filter(year=year, batch=batch)
-                attendance_form = AttendanceForm(students=students)
-        elif 'submit_attendance' in request.POST:
-            attendance_form = AttendanceForm(request.POST)
-            if attendance_form.is_valid():
-                subject = attendance_form.cleaned_data['subject']
-                student_ids = request.POST.getlist('students')
-                for student_id in student_ids:
-                    student = Student.objects.get(id=student_id)
-                    Attendance.objects.create(student=student, subject=subject)
-                    if subject.name == 'C-Language':
-                        student.c_language_attendance += 1
-                    elif subject.name == 'IT':
-                        student.it_attendance += 1
-                    elif subject.name == 'DS':
-                        student.ds_attendance += 1
-                    elif subject.name == 'OS':
-                        student.os_attendance += 1
-                    elif subject.name == 'Java':
-                        student.java_attendance += 1
-                    elif subject.name == 'DBMS':
-                        student.dbms_attendance += 1
-                    elif subject.name == 'Python':
-                        student.python_attendance += 1
-                    elif subject.name == 'WT':
-                        student.wt_attendance += 1
-                    elif subject.name == 'R':
-                        student.r_attendance += 1
-                    elif subject.name == 'CD':
-                        student.cd_attendance += 1
-                    student.save()
-                return redirect('attendance_success')
-
-    return render(request, 'record_attendance.html', {
-        'year_batch_form': year_batch_form,
-        'attendance_form': attendance_form,
-        'students': students,
-    })"""
-
 logger = logging.getLogger(__name__)
 
 def record_attendance(request):
@@ -140,10 +94,24 @@ def record_attendance(request):
             if attendance_form.is_valid():
                 subject = attendance_form.cleaned_data['subject']
                 selected_roll_nos = attendance_form.cleaned_data['students']
-                selected_students = Student.objects.filter(roll_no__in=selected_roll_nos)
-                for student in selected_students:
+                in_time = attendance_form.cleaned_data['in_time']
+                out_time = attendance_form.cleaned_data['out_time']
+                date = attendance_form.cleaned_data['date']
+                
+                # Create and save Session instances
+                for roll_no in selected_roll_nos:
+                    student = Student.objects.get(roll_no=roll_no)
                     Attendance.objects.create(student=student, subject=subject)
-                    if subject.name == 'C-Language':
+                    Session.objects.create(
+                        student=student,  # Use student ForeignKey
+                        date=date,
+                        subject=subject,
+                        in_time=in_time,
+                        out_time=out_time
+                    )
+                    
+                    # Update attendance count for the student
+                    if subject.name == 'C_Language':
                         student.c_language_attendance += 1
                     elif subject.name == 'IT':
                         student.it_attendance += 1
@@ -163,7 +131,12 @@ def record_attendance(request):
                         student.r_attendance += 1
                     elif subject.name == 'CD':
                         student.cd_attendance += 1
+                    elif subject.name == 'SD':
+                        student.sd_attendance += 1
+                    elif subject.name == 'DV':
+                        student.dv_attendance += 1
                     student.save()
+                
                 logger.info("Attendance recorded successfully. Redirecting to success page.")
                 return redirect('attendance_success')
             else:
@@ -174,6 +147,7 @@ def record_attendance(request):
         'attendance_form': attendance_form,
         'students': students,
     })
+
 
 
 def attendance_summary(request):
@@ -198,7 +172,9 @@ def attendance_summary(request):
                     'WT': student.wt_attendance,
                     'R': student.r_attendance,
                     'CD': student.cd_attendance,
-                }
+                    'SD': student.sd_attendance,
+                    'DV': student.dv_attendance,
+                    }
                 attendance_data.append((student, subjects))
             return render(request, 'attendance_summary.html', {
                 'year_batch_form': year_batch_form,
@@ -213,5 +189,38 @@ def attendance_summary(request):
         'attendance_data': attendance_data,
     })
 
+
+def session_summary(request):
+    form = SessionFilterForm()
+    sessions = Session.objects.all()
+
+    if request.method == 'POST':
+        form = SessionFilterForm(request.POST)
+        if form.is_valid():
+            year = form.cleaned_data.get('year')
+            batch = form.cleaned_data.get('batch')
+            date = form.cleaned_data.get('date')
+            subject = form.cleaned_data.get('subject')
+            roll_no = form.cleaned_data.get('roll_no')
+
+            if year and batch:
+                sessions = sessions.filter(
+                    student__year=year,
+                    student__batch=batch
+                )
+            if date:
+                sessions = sessions.filter(date=date)
+            if subject:
+                sessions = sessions.filter(subject=subject)
+            if roll_no:
+                sessions = sessions.filter(student__roll_no=roll_no)
+
+    sessions = sessions.order_by('-date', 'student__roll_no')  # Order by date first, then by roll number
+
+    return render(request, 'session_summary.html', {
+        'form': form,
+        'sessions': sessions,
+    })
+            
 def attendance_success(request):
     return render(request, 'attendance_success.html')
