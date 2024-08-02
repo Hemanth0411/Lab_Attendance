@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import StudentForm, AttendanceForm, YearBatchForm, SessionFilterForm
 from .models import Student, Subject, Attendance, Session
 import logging
 from django.contrib import messages
+from django.http import HttpResponse
+import pandas as pd
+from django.contrib.auth.decorators import login_required
 
 def admin_login(request):
     if request.method == 'POST':
@@ -22,13 +25,18 @@ def admin_login(request):
             print(form.errors)  # Print errors to console for debugging
     else:
         form = AuthenticationForm()
-        
+
     return render(request, 'admin_login.html', {'form': form})
 
+def admin_logout(request):
+    logout(request)
+    return redirect('admin_login')
 
+@login_required
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
 
+@login_required
 def add_students(request):
     if request.method == 'POST':
         year = request.POST.get('year')
@@ -41,7 +49,7 @@ def add_students(request):
         form = StudentForm(year=year)
     return render(request, 'add_students.html', {'form': form})
 
-
+@login_required
 def edit_student(request, roll_no):
     student = get_object_or_404(Student, roll_no=roll_no)
     if request.method == 'POST':
@@ -53,6 +61,7 @@ def edit_student(request, roll_no):
         form = StudentForm(instance=student, year=student.year)
     return render(request, 'edit_student.html', {'form': form})
 
+@login_required
 def student_list(request):
     year = request.GET.get('year')
     batch = request.GET.get('batch')
@@ -66,6 +75,7 @@ def student_list(request):
 
     return render(request, 'student_list.html', {'students': students})
 
+@login_required
 def delete_student(request, roll_no):
     student = get_object_or_404(Student, roll_no=roll_no)
     student.delete()
@@ -73,6 +83,7 @@ def delete_student(request, roll_no):
 
 logger = logging.getLogger(__name__)
 
+@login_required
 def record_attendance(request):
     year_batch_form = YearBatchForm()
     students = None
@@ -148,8 +159,7 @@ def record_attendance(request):
         'students': students,
     })
 
-
-
+@login_required
 def attendance_summary(request):
     year_batch_form = YearBatchForm()
     attendance_data = []
@@ -189,7 +199,7 @@ def attendance_summary(request):
         'attendance_data': attendance_data,
     })
 
-
+@login_required
 def session_summary(request):
     form = SessionFilterForm()
     sessions = Session.objects.all()
@@ -203,11 +213,10 @@ def session_summary(request):
             subject = form.cleaned_data.get('subject')
             roll_no = form.cleaned_data.get('roll_no')
 
-            if year and batch:
-                sessions = sessions.filter(
-                    student__year=year,
-                    student__batch=batch
-                )
+            if year and year != '':
+                sessions = sessions.filter(student__year=year)
+            if batch and batch != '':
+                sessions = sessions.filter(student__batch=batch)
             if date:
                 sessions = sessions.filter(date=date)
             if subject:
@@ -215,12 +224,54 @@ def session_summary(request):
             if roll_no:
                 sessions = sessions.filter(student__roll_no=roll_no)
 
-    sessions = sessions.order_by('-date', 'student__roll_no')  # Order by date first, then by roll number
+    Sessions = sessions.order_by('-date', 'student__roll_no')
+
+    if request.GET.get('export') == 'excel':
+        return export_to_excel(Sessions)
 
     return render(request, 'session_summary.html', {
         'form': form,
-        'sessions': sessions,
+        'sessions': Sessions,
     })
-            
+
+@login_required
+def export_to_excel(sessions):
+    # Convert querysets to DataFrame
+    data = {
+        'ID': [session.id for session in sessions],
+        'Roll No': [session.student.roll_no for session in sessions],
+        'Name': [session.student.name for session in sessions],
+        'Date': [session.date for session in sessions],
+        'Subject': [session.subject for session in sessions],
+        'In Time': [session.in_time for session in sessions],
+        'Out Time': [session.out_time for session in sessions],
+    }
+    df = pd.DataFrame(data)
+
+    # Create an HTTP response with the Excel file
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=session_summary.xlsx'
+
+    # Write DataFrame to the response
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Session Summary')
+
+    return response
+
+@login_required 
+def delete_session(request, session_id):
+    session = get_object_or_404(Session, id=session_id)
+    student = session.student
+    subject_name = session.subject.name
+    
+    # Reduce the student's attendance count for the subject
+    student.reduce_attendance(subject_name)
+    
+    # Delete the session
+    session.delete()
+    
+    return redirect('session_summary')
+
+@login_required
 def attendance_success(request):
     return render(request, 'attendance_success.html')

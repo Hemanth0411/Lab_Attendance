@@ -113,6 +113,16 @@ USE_I18N = True
 
 USE_TZ = True
 
+# URL where users are redirected when they try to access a protected page without being logged in
+LOGIN_URL = '/monitor/admin-login/'
+
+# URL where users are redirected after logging in successfully
+LOGIN_REDIRECT_URL = '/monitor/admin-dashboard/'
+
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+
+# Set session expiry to be at the end of browser session
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

@@ -72,8 +72,9 @@ class AttendanceForm(forms.Form):
             
             
 class SessionFilterForm(forms.Form):
-    year = forms.ChoiceField(choices=[('2021-25', '2021-25'), ('2022-26', '2022-26'), ('2023-27', '2023-27'), ('2024-28', '2024-28')], required=False)
-    batch = forms.ChoiceField(choices=[('A', 'A'), ('B', 'B')], required=False)
+    ALL_CHOICES = [('', 'All')]  # Choice for selecting 'All'
+    year = forms.ChoiceField(choices=ALL_CHOICES + [(y, y) for y in ['2021-25', '2022-26', '2023-27', '2024-28']], required=False)
+    batch = forms.ChoiceField(choices=ALL_CHOICES + [('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')], required = False)
     date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     subject = forms.ModelChoiceField(queryset=Subject.objects.all(), required=False)
-    roll_no = forms.CharField(max_length=12, required=False)
+    roll_no = forms.CharField(required=False)

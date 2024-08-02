@@ -11,6 +11,8 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Filter Sessions</button>
+        <!-- Add a link to export to Excel -->
+        <a href="{% url 'session_summary' %}?export=excel" class="button">Download as Excel</a>
     </form>
 
     <!-- Display session data in a table -->
@@ -19,10 +21,13 @@
             <tr>
                 <th>Roll No</th>
                 <th>Name</th>
+                <th>Year</th>
+                <th>Batch</th>
                 <th>Date</th>
                 <th>Subject</th>
                 <th>In Time</th>
                 <th>Out Time</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -30,14 +35,19 @@
             <tr>
                 <td>{{ session.student.roll_no }}</td>
                 <td>{{ session.student.name }}</td>
+                <td>{{ session.student.year }}</td>
+                <td>{{ session.student.batch }}</td>
                 <td>{{ session.date }}</td>
-                <td>{{ session.subject.name }}</td>
+                <td>{{ session.subject }}</td>
                 <td>{{ session.in_time }}</td>
                 <td>{{ session.out_time }}</td>
+                <td>
+                    <a href="{% url 'delete_session' session.id %}" onclick="return confirm('Are you sure you want to delete this session?');">Delete</a>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6">No session data available.</td>
+                <td colspan="7">No session data available.</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -37,6 +37,31 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+    
+    def reduce_attendance(self, subject_name):
+        # Map subject names to corresponding attendance fields
+        field_map = {
+            'C Language': 'c_language_attendance',
+            'IT': 'it_attendance',
+            'DS': 'ds_attendance',
+            'OS': 'os_attendance',
+            'Java': 'java_attendance',
+            'DBMS': 'dbms_attendance',
+            'Python': 'python_attendance',
+            'WT': 'wt_attendance',
+            'R': 'r_attendance',
+            'CD': 'cd_attendance',
+            'SD': 'sd_attendance',
+            'DV': 'dv_attendance'
+        }
+
+        # Get the field name for the subject
+        field_name = field_map.get(subject_name)
+        if field_name:
+            current_value = getattr(self, field_name, 0)
+            if current_value > 0:
+                setattr(self, field_name, current_value - 1)
+                self.save()
 
 class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
