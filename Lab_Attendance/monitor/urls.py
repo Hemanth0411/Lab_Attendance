@@ -14,4 +14,8 @@ urlpatterns = [
     path('attendance/success/', views.attendance_success, name='attendance_success'),
     path('session-summary/', views.session_summary, name='session_summary'),
     path('sessions/delete/<int:session_id>/', views.delete_session, name='delete_session'),
+    path('import_students/', views.import_students, name='import_students'),
+    path('clear-session-records/', views.clear_session_records, name='clear_session_records'),
+    path('upload-sessions/', views.upload_sessions, name='upload_sessions'),
+    path('reduce-attendance/', views.reduce_attendance, name='reduce_attendance'),
 ]

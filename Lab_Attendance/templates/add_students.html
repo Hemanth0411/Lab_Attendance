@@ -11,7 +11,7 @@
 
             function updateBatchOptions() {
                 const year = yearField.value;
-                var batchChoices ;
+                var batchChoices;
 
                 if (year == '2021-25') {
                     batchChoices = ['A', 'B', 'C'];
@@ -25,12 +25,11 @@
                 batchField.disabled = false; // Enable batch field
 
                 batchChoices.forEach(function(batch) {
-                var option = document.createElement('option');
-                option.value = batch;
-                option.text = batch;
-                batchField.add(option);
+                    var option = document.createElement('option');
+                    option.value = batch;
+                    option.text = batch;
+                    batchField.add(option);
                 });
-
 
                 // Restore previously selected value if available
                 if (batchField.dataset.previousValue) {
@@ -53,9 +52,11 @@
 </head>
 <body>
     <h2>Add Students</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
+        <label for="excel_file">Upload Excel File:</label>
+        <input type="file" name="excel_file" accept=".xlsx" />
         <button type="submit">Save Student</button>
     </form>
     <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>

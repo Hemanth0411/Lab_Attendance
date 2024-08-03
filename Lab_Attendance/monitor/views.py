@@ -1,13 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import StudentForm, AttendanceForm, YearBatchForm, SessionFilterForm
+from .forms import StudentForm, AttendanceForm, YearBatchForm, SessionFilterForm, ImportStudentsForm, PartFilter, UploadSessionsForm, ReduceAttendanceForm
 from .models import Student, Subject, Attendance, Session
 import logging
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import pandas as pd
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
 
 def admin_login(request):
     if request.method == 'POST':
@@ -48,6 +50,32 @@ def add_students(request):
         year = request.GET.get('year', None)
         form = StudentForm(year=year)
     return render(request, 'add_students.html', {'form': form})
+
+
+@login_required
+def import_students(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        form = ImportStudentsForm(request.POST, request.FILES)
+        if form.is_valid():
+            excel_file = request.FILES['excel_file']
+            df = pd.read_excel(excel_file, engine='openpyxl')
+
+            for _, row in df.iterrows():
+                roll_no = row['roll_no']
+                name = row['name']
+                year = row['year']
+                batch = row['batch']
+                if not Student.objects.filter(roll_no=roll_no).exists():
+                    Student.objects.create(
+                        roll_no=roll_no,
+                        name=name,
+                        year=year,
+                        batch=batch
+                    )
+            return JsonResponse({'status': 'success'})
+        return JsonResponse({'status': 'error'}, status=400)
+    return render(request, 'import_students.html', {'form': ImportStudentsForm()})
+
 
 @login_required
 def edit_student(request, roll_no):
@@ -100,7 +128,7 @@ def record_attendance(request):
         elif 'submit_attendance' in request.POST:
             year = request.POST.get('year')
             batch = request.POST.get('batch')
-            students = Student.objects.filter(year=year, batch=batch)
+            students = Student.objects.filter(year=year, batch=batch).order_by('roll_no')
             attendance_form = AttendanceForm(request.POST, students=students)
             if attendance_form.is_valid():
                 subject = attendance_form.cleaned_data['subject']
@@ -108,6 +136,7 @@ def record_attendance(request):
                 in_time = attendance_form.cleaned_data['in_time']
                 out_time = attendance_form.cleaned_data['out_time']
                 date = attendance_form.cleaned_data['date']
+                lab = attendance_form.cleaned_data.get('lab')
                 
                 # Create and save Session instances
                 for roll_no in selected_roll_nos:
@@ -118,7 +147,8 @@ def record_attendance(request):
                         date=date,
                         subject=subject,
                         in_time=in_time,
-                        out_time=out_time
+                        out_time=out_time,
+                        lab=lab
                     )
                     
                     # Update attendance count for the student
@@ -159,45 +189,91 @@ def record_attendance(request):
         'students': students,
     })
 
+
 @login_required
 def attendance_summary(request):
     year_batch_form = YearBatchForm()
+    session_filter_form = PartFilter(request.POST or None)
     attendance_data = []
+    subject_column = None
 
     if request.method == 'POST':
-        year_batch_form = YearBatchForm(request.POST)
-        if year_batch_form.is_valid():
-            year = year_batch_form.cleaned_data['year']
-            batch = year_batch_form.cleaned_data['batch']
-            students = Student.objects.filter(year=year, batch=batch)
+        if session_filter_form.is_valid():
+            year = session_filter_form.cleaned_data['year']
+            batch = session_filter_form.cleaned_data['batch']
+            subject = session_filter_form.cleaned_data['subject']
+            roll_no = session_filter_form.cleaned_data.get('roll_no')
+
+            # Filter students by year, batch, and roll number
+            students = Student.objects.all()
+            if year:
+                students = students.filter(year=year)
+            if batch:
+                students = students.filter(batch=batch)
+            if roll_no:
+                students = students.filter(roll_no=roll_no)
+
+            # Filter attendance based on selected subject
             for student in students:
-                subjects = {
-                    'C_Language': student.c_language_attendance,
-                    'IT': student.it_attendance,
-                    'DS': student.ds_attendance,
-                    'OS': student.os_attendance,
-                    'Java': student.java_attendance,
-                    'DBMS': student.dbms_attendance,
-                    'Python': student.python_attendance,
-                    'WT': student.wt_attendance,
-                    'R': student.r_attendance,
-                    'CD': student.cd_attendance,
-                    'SD': student.sd_attendance,
-                    'DV': student.dv_attendance,
+                if subject:
+                    subject_name = subject.name
+                    attendance_count = getattr(student, f"{subject_name.lower().replace(' ', '_')}_attendance", 0)
+                    subjects = {subject_name: attendance_count}
+                    attendance_data.append((student, subjects))
+                else:
+                    # Include all subjects
+                    subjects = {
+                        'C_Language': student.c_language_attendance,
+                        'IT': student.it_attendance,
+                        'DS': student.ds_attendance,
+                        'OS': student.os_attendance,
+                        'Java': student.java_attendance,
+                        'DBMS': student.dbms_attendance,
+                        'Python': student.python_attendance,
+                        'WT': student.wt_attendance,
+                        'R': student.r_attendance,
+                        'CD': student.cd_attendance,
+                        'SD': student.sd_attendance,
+                        'DV': student.dv_attendance,
                     }
-                attendance_data.append((student, subjects))
-            return render(request, 'attendance_summary.html', {
-                'year_batch_form': year_batch_form,
-                'attendance_data': attendance_data,
-            })
-        else:
-            logger.error(f"Form errors: {year_batch_form.errors}")
-            messages.error(request, "There was an error in the form. Please try again.")
+                    attendance_data.append((student, subjects))
+
+            if subject:
+                subject_column = subject.name
 
     return render(request, 'attendance_summary.html', {
         'year_batch_form': year_batch_form,
+        'session_filter_form': session_filter_form,
         'attendance_data': attendance_data,
+        'subject_column': subject_column,
     })
+
+@login_required
+def reduce_attendance(request):
+    if request.method == 'POST':
+        form = ReduceAttendanceForm(request.POST)
+        if form.is_valid():
+            roll_no = form.cleaned_data['roll_no']
+            subject = form.cleaned_data['subject']
+
+            # Look up the student by roll number
+            try:
+                student = Student.objects.get(roll_no=roll_no)
+            except Student.DoesNotExist:
+                form.add_error('roll_no', 'Student with this roll number does not exist.')
+                return render(request, 'reduce_attendance.html', {'form': form})
+
+            # Reduce attendance for the selected student and subject
+            student.reduce_attendance(subject)
+            return redirect('attendance_summary')  # Redirect to the attendance summary page or any other page
+
+    else:
+        form = ReduceAttendanceForm()
+
+    return render(request, 'reduce_attendance.html', {
+        'form': form,
+    })
+
 
 @login_required
 def session_summary(request):
@@ -224,17 +300,17 @@ def session_summary(request):
             if roll_no:
                 sessions = sessions.filter(student__roll_no=roll_no)
 
-    Sessions = sessions.order_by('-date', 'student__roll_no')
+    sessions = sessions.order_by('-date', 'student__roll_no')
 
     if request.GET.get('export') == 'excel':
-        return export_to_excel(Sessions)
+        return export_to_excel(sessions)
 
     return render(request, 'session_summary.html', {
         'form': form,
-        'sessions': Sessions,
+        'sessions': sessions,
     })
 
-@login_required
+
 def export_to_excel(sessions):
     # Convert querysets to DataFrame
     data = {
@@ -242,7 +318,8 @@ def export_to_excel(sessions):
         'Roll No': [session.student.roll_no for session in sessions],
         'Name': [session.student.name for session in sessions],
         'Date': [session.date for session in sessions],
-        'Subject': [session.subject for session in sessions],
+        'Subject': [session.subject.name for session in sessions],  # Accessing the name of the Subject
+        'Lab': [session.lab for session in sessions],  # Accessing the Lab attribute
         'In Time': [session.in_time for session in sessions],
         'Out Time': [session.out_time for session in sessions],
     }
@@ -257,6 +334,39 @@ def export_to_excel(sessions):
         df.to_excel(writer, index=False, sheet_name='Session Summary')
 
     return response
+
+
+
+@login_required
+def upload_sessions(request):
+    if request.method == 'POST':
+        form = UploadSessionsForm(request.POST, request.FILES)
+        if form.is_valid():
+            excel_file = request.FILES['excel_file']
+            df = pd.read_excel(excel_file)
+
+            for _, row in df.iterrows():
+                student = Student.objects.filter(roll_no=row['Roll No']).first()
+                subject = Subject.objects.filter(name=row['Subject']).first()
+                if student and subject:
+                    Session.objects.update_or_create(
+                        id=row['ID'], 
+                        defaults={
+                            'student': student,
+                            'date': row['Date'],
+                            'subject': subject,
+                            'in_time': row['In Time'],
+                            'out_time': row['Out Time']
+                        }
+                    )
+
+            messages.success(request, 'Session records have been updated from the Excel file.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        form = UploadSessionsForm()
+
+    return render(request, 'upload_sessions.html', {'form': form})
+
 
 @login_required 
 def delete_session(request, session_id):
@@ -275,3 +385,12 @@ def delete_session(request, session_id):
 @login_required
 def attendance_success(request):
     return render(request, 'attendance_success.html')
+
+@login_required
+def clear_session_records(request):
+    if request.method == 'POST':
+        Session.objects.all().delete()
+        messages.success(request, 'All session records have been cleared.')
+        return redirect('session_summary')
+    
+    return render(request, 'confirm_clear.html')  # Create this template for confirmation

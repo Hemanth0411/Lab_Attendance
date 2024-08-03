@@ -8,9 +8,11 @@
     <ul>
         <li><a href="{% url 'add_students' %}">Add Students</a></li>
         <li><a href="{% url 'student_list' %}">Student List</a></li>
+        <li><a href="{% url 'import_students' %}">Import Students</a></li>
         <li><a href="{% url 'record_attendance' %}">Record Attendance</a></li>
         <li><a href="{% url 'attendance_summary' %}">Attendance Summary</a></li>
         <li><a href="{% url 'session_summary' %}">Session Summary</a></li>
+        <li><a href="{% url 'clear_session_records' %}">Clear Sessions</a></li>
     </ul>
     <!-- Add a logout link -->
     <a href="{% url 'admin_logout' %}">Logout</a>

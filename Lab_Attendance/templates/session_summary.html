@@ -13,6 +13,13 @@
         <button type="submit">Filter Sessions</button>
         <!-- Add a link to export to Excel -->
         <a href="{% url 'session_summary' %}?export=excel" class="button">Download as Excel</a>
+        <a href="{% url 'upload_sessions' %}">Upload Sessions</a>
+    </form>
+
+    <!-- Form to clear all session records -->
+    <form method="post" action="{% url 'clear_session_records' %}" style="margin-top: 20px;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('Are you sure you want to clear all session records?');">Clear All Session Records</button>
     </form>
 
     <!-- Display session data in a table -->
@@ -25,6 +32,7 @@
                 <th>Batch</th>
                 <th>Date</th>
                 <th>Subject</th>
+                <th>Lab</th>
                 <th>In Time</th>
                 <th>Out Time</th>
                 <th>Actions</th>
@@ -39,6 +47,7 @@
                 <td>{{ session.student.batch }}</td>
                 <td>{{ session.date }}</td>
                 <td>{{ session.subject }}</td>
+                <td>{{ session.lab }}</td>
                 <td>{{ session.in_time }}</td>
                 <td>{{ session.out_time }}</td>
                 <td>
@@ -47,7 +56,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7">No session data available.</td>
+                <td colspan="10">No session data available.</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Clear</title>
+</head>
+<body>
+    <h1>Confirm Clear Session Records</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to clear all session records?</p>
+        <button type="submit">Yes, Clear All</button>
+        <a href="{% url 'session_summary' %}">Cancel</a>
+    </form>
+</body>
+</html>

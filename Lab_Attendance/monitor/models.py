@@ -90,6 +90,12 @@ class Session(models.Model):
     date = models.DateField()
     in_time = models.CharField(max_length=5, choices=IN_TIME_CHOICES)
     out_time = models.CharField(max_length=5, choices=OUT_TIME_CHOICES)
+    lab = models.CharField(max_length=10, choices=[
+        ('Lab-1', 'Lab-1'),
+        ('Lab-2', 'Lab-2'),
+        ('Lab-3', 'Lab-3'),
+        ('Lab-4', 'Lab-4')
+    ], blank=True, null=True)
 
     def __str__(self):
         return f"{self.student.roll_no} - {self.subject} - {self.date}"

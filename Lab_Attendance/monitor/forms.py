@@ -1,5 +1,4 @@
 from django import forms
-from django.utils import timezone
 from .models import Student, Attendance, Subject
 
 class StudentForm(forms.ModelForm):
@@ -63,6 +62,12 @@ class AttendanceForm(forms.Form):
         ('15:00', '3:00'),
         ('16:00', '4:00')
     ])
+    lab = forms.ChoiceField(choices=[
+        ('Lab-1', 'Lab-1'),
+        ('Lab-2', 'Lab-2'),
+        ('Lab-3', 'Lab-3'),
+        ('Lab-4', 'Lab-4')
+    ], required=False)
 
     def __init__(self, *args, **kwargs):
         students_queryset = kwargs.pop('students', None)
@@ -78,3 +83,33 @@ class SessionFilterForm(forms.Form):
     date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     subject = forms.ModelChoiceField(queryset=Subject.objects.all(), required=False)
     roll_no = forms.CharField(required=False)
+    
+class ImportStudentsForm(forms.Form):
+    excel_file = forms.FileField()
+    
+class PartFilter(forms.Form):
+    ALL_CHOICES = [('', 'All')]
+    year = forms.ChoiceField(choices=ALL_CHOICES + [(y, y) for y in ['2021-25', '2022-26', '2023-27', '2024-28']], required=False)
+    batch = forms.ChoiceField(choices=ALL_CHOICES + [('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')], required = False)
+    subject = forms.ModelChoiceField(queryset=Subject.objects.all(), required=False)
+    roll_no = forms.CharField(required=False)
+    
+class UploadSessionsForm(forms.Form):
+    excel_file = forms.FileField()
+    
+class ReduceAttendanceForm(forms.Form):
+    roll_no = forms.CharField(required=False)
+    subject = forms.ChoiceField(choices=[
+        ('C Language', 'C Language'),
+        ('IT', 'IT'),
+        ('DS', 'DS'),
+        ('OS', 'OS'),
+        ('Java', 'Java'),
+        ('DBMS', 'DBMS'),
+        ('Python', 'Python'),
+        ('WT', 'WT'),
+        ('R', 'R'),
+        ('CD', 'CD'),
+        ('SD', 'SD'),
+        ('DV', 'DV')
+    ], label="Select Subject")

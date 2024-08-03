@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Record Attendance</title>
 </head>
 <body>
@@ -29,6 +31,9 @@
         <!-- Time selection -->
         {{ attendance_form.in_time.label_tag }} {{ attendance_form.in_time }}<br>
         {{ attendance_form.out_time.label_tag }} {{ attendance_form.out_time }}<br>
+
+        <!-- Lab selection -->
+        {{ attendance_form.lab.label_tag }} {{ attendance_form.lab }}<br>
 
         <!-- Student list -->
         <table>
