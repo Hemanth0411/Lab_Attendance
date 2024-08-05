@@ -215,30 +215,30 @@ def attendance_summary(request):
 
             # Filter attendance based on selected subject
             for student in students:
+                subjects = {
+                    'C_Language': student.c_language_attendance,
+                    'IT': student.it_attendance,
+                    'DS': student.ds_attendance,
+                    'OS': student.os_attendance,
+                    'Java': student.java_attendance,
+                    'DBMS': student.dbms_attendance,
+                    'Python': student.python_attendance,
+                    'WT': student.wt_attendance,
+                    'R': student.r_attendance,
+                    'CD': student.cd_attendance,
+                    'SD': student.sd_attendance,
+                    'DV': student.dv_attendance,
+                }
                 if subject:
                     subject_name = subject.name
-                    attendance_count = getattr(student, f"{subject_name.lower().replace(' ', '_')}_attendance", 0)
-                    subjects = {subject_name: attendance_count}
-                    attendance_data.append((student, subjects))
+                    subs = {subject_name: subjects.get(subject_name, 0)}
+                    attendance_data.append((student, subs))
+                    subject_column = subject_name
                 else:
                     # Include all subjects
-                    subjects = {
-                        'C_Language': student.c_language_attendance,
-                        'IT': student.it_attendance,
-                        'DS': student.ds_attendance,
-                        'OS': student.os_attendance,
-                        'Java': student.java_attendance,
-                        'DBMS': student.dbms_attendance,
-                        'Python': student.python_attendance,
-                        'WT': student.wt_attendance,
-                        'R': student.r_attendance,
-                        'CD': student.cd_attendance,
-                        'SD': student.sd_attendance,
-                        'DV': student.dv_attendance,
-                    }
                     attendance_data.append((student, subjects))
 
-            if subject:
+            if subject and not attendance_data:
                 subject_column = subject.name
 
     return render(request, 'attendance_summary.html', {
@@ -247,6 +247,7 @@ def attendance_summary(request):
         'attendance_data': attendance_data,
         'subject_column': subject_column,
     })
+
 
 @login_required
 def reduce_attendance(request):
@@ -265,7 +266,14 @@ def reduce_attendance(request):
 
             # Reduce attendance for the selected student and subject
             student.reduce_attendance(subject)
-            return redirect('attendance_summary')  # Redirect to the attendance summary page or any other page
+            
+            # Optionally add a success message to display on the same page
+            success_message = "Attendance reduced successfully."
+
+            return render(request, 'reduce_attendance.html', {
+                'form': form,
+                'success_message': success_message,
+            })
 
     else:
         form = ReduceAttendanceForm()

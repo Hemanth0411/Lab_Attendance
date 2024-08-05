@@ -1,7 +1,44 @@
+<!--
 <!DOCTYPE html>
 <html>
 <head>
     <title>Attendance Recorded Successfully</title>
+</head>
+<body>
+    <h1>Attendance Recorded Successfully</h1>
+    <p>The attendance has been recorded for the selected students.</p>
+    <a href="{% url 'record_attendance' %}">Record More Attendance</a><br>
+    <a href="{% url 'attendance_summary' %}">Attendance Summary</a><br>
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Recorded Successfully</title>
+    <style>
+        body {
+            background-color: #4C516D;
+            color: #00008B;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #00008B;
+        }
+        p {
+            margin-top: 20px;
+        }
+        a {
+            color: #00008B;
+            text-decoration: none;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <h1>Attendance Recorded Successfully</h1>

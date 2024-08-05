@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,121 @@
 <body>
     <h1>Record Attendance</h1>
     
+     Form to filter students
+    <form method="post" action="{% url 'record_attendance' %}">
+        {% csrf_token %}
+        {{ year_batch_form.as_p }}
+        <button type="submit" name="filter_students">Filter Students</button>
+    </form>
+
+   Form to record attendance
+    {% if students %}
+    <form method="post" action="{% url 'record_attendance' %}">
+        {% csrf_token %}
+        <input type="hidden" name="year" value="{{ year_batch_form.cleaned_data.year }}">
+        <input type="hidden" name="batch" value="{{ year_batch_form.cleaned_data.batch }}">
+
+         Subject selection
+        {{ attendance_form.subject.label_tag }} {{ attendance_form.subject }}<br>
+
+         Date input
+        {{ attendance_form.date.label_tag }} {{ attendance_form.date }}<br>
+
+         Time selection
+        {{ attendance_form.in_time.label_tag }} {{ attendance_form.in_time }}<br>
+        {{ attendance_form.out_time.label_tag }} {{ attendance_form.out_time }}<br>
+
+         Lab selection
+        {{ attendance_form.lab.label_tag }} {{ attendance_form.lab }}<br>
+
+        Student list
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.roll_no }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>
+                         Note: The value attribute should be the student's roll number
+                        <input type="checkbox" name="students" value="{{ student.roll_no }}">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <button type="submit" name="submit_attendance">Submit Attendance</button>
+    </form>
+    {% endif %}
+    
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Attendance</title>
+    <style>
+        body {
+            background-color: #4C516D;
+            color: #00008B;
+        }
+        h1 {
+            color: #00008B;
+        }
+        label, input, button, a {
+            color: #00008B;
+        }
+        button {
+            background-color: #00008B;
+            color: #FFFFFF;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00006A;
+        }
+        a {
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #00008B;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Record Attendance</h1>
+
     <!-- Form to filter students -->
     <form method="post" action="{% url 'record_attendance' %}">
         {% csrf_token %}
@@ -57,11 +173,11 @@
                 {% endfor %}
             </tbody>
         </table>
-        
+
         <button type="submit" name="submit_attendance">Submit Attendance</button>
     </form>
     {% endif %}
-    
+
     <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
 </body>
 </html>

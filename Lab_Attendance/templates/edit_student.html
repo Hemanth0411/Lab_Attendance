@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,6 +52,78 @@
         });
     </script>
 </head>
+<body>
+    <h2>Edit Students</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update Student</button>
+    </form>
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Students</title>
+    <style>
+        body {
+            background-color: #4C516D;
+            color: #00008B;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearField = document.querySelector('select[name="year"]');
+            const batchField = document.querySelector('select[name="batch"]');
+
+            function updateBatchOptions() {
+                const year = yearField.value;
+                var batchChoices;
+
+                if (year == '2021-25') {
+                    batchChoices = ['A', 'B', 'C'];
+                } else if (year === '2024-28') {
+                    batchChoices = ['A', 'B'];
+                } else {
+                    batchChoices = ['A', 'B', 'C', 'D'];
+                }
+
+                batchField.innerHTML = '';  // Clear existing options
+                batchField.disabled = false; // Enable batch field
+
+                batchChoices.forEach(function(batch) {
+                    var option = document.createElement('option');
+                    option.value = batch;
+                    option.text = batch;
+                    batchField.add(option);
+                });
+
+                // Restore previously selected value if available
+                if (batchField.dataset.previousValue) {
+                    batchField.value = batchField.dataset.previousValue;
+                } else {
+                    batchField.selectedIndex = 0;  // Select the first option by default
+                }
+            }
+
+            yearField.addEventListener('change', function() {
+                updateBatchOptions();
+                // Save the selected value for batch field (if any)
+                batchField.dataset.previousValue = batchField.value;
+            });
+
+            // Initialize batch options based on the current year selection
+            updateBatchOptions();
+        });
+    </script>
+</head>
+
 <body>
     <h2>Edit Students</h2>
     <form method="post">

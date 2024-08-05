@@ -1,7 +1,53 @@
+<!---
 <!DOCTYPE html>
 <html>
 <head>
     <title>Confirm Clear</title>
+</head>
+<body>
+    <h1>Confirm Clear Session Records</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to clear all session records?</p>
+        <button type="submit">Yes, Clear All</button>
+        <a href="{% url 'session_summary' %}">Cancel</a>
+    </form>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Clear</title>
+    <style>
+        body {
+            background-color: #4C516D;
+            color: #00008B;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #00008B;
+        }
+        p {
+            margin-top: 20px;
+        }
+        button, a {
+            color: #00008B;
+            background-color: #f3f3f3;
+            border: 1px solid #00008B;
+            padding: 10px 20px;
+            text-decoration: none;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        button:hover, a:hover {
+            background-color: #e3e3e3;
+        }
+        form {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>Confirm Clear Session Records</h1>

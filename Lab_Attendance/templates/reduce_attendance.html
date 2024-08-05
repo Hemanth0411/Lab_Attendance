@@ -6,6 +6,11 @@
 <body>
     <h1>Reduce Attendance</h1>
 
+    <!-- Display success message if present -->
+    {% if success_message %}
+        <p style="color: green;">{{ success_message }}</p>
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
