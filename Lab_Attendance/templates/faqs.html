@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs</title>
+    <style>
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+.faq-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #222;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.faq-item {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px 0;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-question {
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background-color: #e0e0e0;
+}
+
+.faq-question::after {
+    content: '▼';
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    transition: transform 0.3s ease;
+}
+
+.faq-answer {
+    display: none;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-left: 3px solid #007bff;
+    border-radius: 5px;
+}
+
+.faq-question.active::after {
+    transform: rotate(180deg);
+}
+
+.highlight {
+    background-color: #e0e0e0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: normal;
+}
+
+.code {
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+}
+
+ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+li {
+    margin-bottom: 5px;
+}
+</style>
+</head>
+<body>
+    <div class="faq-container">
+        <h1>Frequently Asked Questions</h1>
+
+        <div class="faq-item">
+            <div class="faq-question"><strong>How to add student data?</strong></div>
+            <div class="faq-answer">
+                <strong>Method 1:</strong> <u>Manually enter student information</u> by filling out the form on the <span class="highlight">‘Add Students’</span> page in the admin dashboard and submit it.
+                <br><br>
+                <strong>Method 2:</strong> Click the <span class="highlight">‘Import Students’</span> option on the <span class="highlight">‘Add Student’</span> page and upload an Excel file with student data. The file should include rows with the following columns:
+                <ul>
+                    <li><strong>'roll_no'</strong>: A <u>12-digit number</u></li>
+                    <li><strong>'name'</strong></li>
+                    <li><strong>'year'</strong>: In the format <u>'2022-26'</u></li>
+                    <li><strong>'batch'</strong>: A single uppercase letter, such as <u>'A'</u> or <u>'B'</u></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"><strong>How to clear student data?</strong></div>
+            <div class="faq-answer">
+                There are two methods to clear student data:
+                <br><br>
+                <strong>Method 1:</strong> Navigate to the <span class="highlight">Student List</span> page. Locate the specific record you wish to delete and click on <u>Delete</u> to remove that record.
+                <br><br>
+                <strong>Method 2:</strong> On the <span class="highlight">Student List</span> page, use the filters to select a specific <u>year</u> or <u>year and batch</u>. Then, click on <span class="highlight">Clear Records</span> to delete all student data for the selected criteria.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"><strong>How to clear session data?</strong></div>
+            <div class="faq-answer">
+                To clear session data, follow these steps:
+                <br><br>
+                <strong>1. In the Admin Dashboard:</strong>
+                <br>
+                Click on <span class="highlight">Clear Sessions</span>.
+                <br><br>
+                <strong>2. Confirm the action:</strong>
+                <br>
+                Select <u>'Yes'</u> to proceed with clearing the session data.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"><strong>How to add session data?</strong></div>
+            <div class="faq-answer">
+                There are two methods to add session data:
+                <br><br>
+                <strong>1. Automatic Addition:</strong>
+                <br>
+                Session data is <u>automatically added</u> whenever attendance is recorded.
+                <br><br>
+                <strong>2. Manual Upload:</strong>
+                <br>
+                Go to the <span class="highlight">Session Summary</span> page in the Admin Dashboard and click on the <span class="highlight">Upload Session</span> button. Then, upload an Excel file containing the session data with the following columns:
+                <br><br>
+                <ul>
+                    <li><strong>ID</strong></li>
+                    <li><strong>Roll No</strong></li>
+                    <li><strong>Name</strong></li>
+                    <li><strong>Date</strong></li>
+                    <li><strong>Subject</strong></li>
+                    <li><strong>Lab</strong></li>
+                    <li><strong>In Time</strong></li>
+                    <li><strong>Out Time</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"><strong>How to add/modify subjects?</strong></div>
+            <div class="faq-answer">
+                To add or modify subjects, follow these steps:
+                <br><br>
+                <strong>1. Update the Form:</strong>
+                <br>
+                In <span class="highlight">forms.py</span>, make the necessary changes in the <u>ReduceAttendanceForm</u> class.
+                <br><br>
+                <strong>2. Modify the Model:</strong>
+                <br>
+                In <span class="highlight">models.py</span>, add or modify a variable in the <u>Student</u> class and in the <u>reduce_student</u> function belonging to the <u>Student</u> class.
+                <br><br>
+                <strong>3. Apply Migrations:</strong>
+                <br>
+                Run the following commands in the shell:
+                <br>
+                <code class="code">python manage.py makemigrations</code>
+                <br>
+                <code class="code">python manage.py migrate</code>
+                <br><br>
+                <strong>4. Update the Views:</strong>
+                <br>
+                In <span class="highlight">views.py</span>, make appropriate changes in the dictionary within the <u>record_attendance</u> and <u>attendance_summary</u> views.
+                <br><br>
+                <strong>5. Modify the Template:</strong>
+                <br>
+                In <span class="highlight">attendance_summary.html</span>, add or modify a column in the table. Update the code in the <u>'if'</u> block and <u>'else'</u> block within the <code class="code">&lt;td&gt;</code> tag.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question"><strong>How to add/modify Year?</strong></div>
+            <div class="faq-answer">
+                To make changes to the year, follow these steps:
+                <br><br>
+                <strong>First:</strong> If you want to remove a year for a graduating batch, first delete the student records belonging to that year, and then modify the year itself.
+                <br><br>
+                <strong>Steps:</strong>
+                <br><br>
+                <strong>1. Update the Forms:</strong>
+                <br>
+                In <span class="highlight">forms.py</span>, add year options to all instances of the year variable. This includes:
+                <ul>
+                    <li><u>StudentForm</u></li>
+                    <li><u>YearBatchForm</u></li>
+                    <li><u>SessionFilterForm</u></li>
+                    <li><u>PartFilter</u> classes</li>
+                </ul>
+                <br>
+                <strong>2. Modify the HTML Templates:</strong>
+                <br>
+                In <span class="highlight">add_students.html</span>, <span class="highlight">edit_student.html</span>, and <span class="highlight">student_list.html</span>, update the <u>if-else</u> statements in the <code class="code">&lt;script&gt;</code> section.
+                <br><br>
+                <strong>3. Update Year Selector:</strong>
+                <br>
+                In <span class="highlight">student_list.html</span>, also modify the options in the <u>Year selector</u> within the <code class="code">&lt;body&gt;</code> tag.
+            </div>
+        </div>
+
+        <!-- Add more FAQ items as needed -->
+    </div>
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                if (answer.style.display === 'block') {
+                    answer.style.display = 'none';
+                } else {
+                    answer.style.display = 'block';
+                }
+                this.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

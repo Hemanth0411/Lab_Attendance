@@ -18,7 +18,11 @@ class Subject(models.Model):
         return self.name
     
 class Student(models.Model):
-    roll_no = models.CharField(max_length=12, primary_key=True, unique=True, validators=[validate_roll_no])
+    roll_no = models.CharField(
+        max_length=12,
+        primary_key=True,
+        unique=True,
+        validators=[validate_roll_no])
     name = models.CharField(default='N/A', max_length=100)
     year = models.CharField(default='2024-28', max_length=10)
     batch = models.CharField(default='A', max_length=5)
@@ -55,7 +59,6 @@ class Student(models.Model):
             'DV': 'dv_attendance'
         }
 
-        # Get the field name for the subject
         field_name = field_map.get(subject_name)
         if field_name:
             current_value = getattr(self, field_name, 0)
@@ -85,7 +88,7 @@ class Session(models.Model):
         ('16:00', '4:00')
     ]
     
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, default=1)  # Link to Student
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, default=1)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     date = models.DateField()
     in_time = models.CharField(max_length=5, choices=IN_TIME_CHOICES)

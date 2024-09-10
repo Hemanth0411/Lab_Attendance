@@ -1,114 +1,85 @@
-<!---
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Session Summary</title>
-</head>
-<body>
-    <h1>Session Summary</h1>
-
-    Form to filter sessions
-    <form method="post" action="{% url 'session_summary' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Filter Sessions</button>
-         Add a link to export to Excel
-        <a href="{% url 'session_summary' %}?export=excel" class="button">Download as Excel</a>
-        <a href="{% url 'upload_sessions' %}">Upload Sessions</a>
-    </form>
-
-     Form to clear all session records
-    <form method="post" action="{% url 'clear_session_records' %}" style="margin-top: 20px;">
-        {% csrf_token %}
-        <button type="submit" onclick="return confirm('Are you sure you want to clear all session records?');">Clear All Session Records</button>
-    </form>
-
-     Display session data in a table
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Roll No</th>
-                <th>Name</th>
-                <th>Year</th>
-                <th>Batch</th>
-                <th>Date</th>
-                <th>Subject</th>
-                <th>Lab</th>
-                <th>In Time</th>
-                <th>Out Time</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for session in sessions %}
-            <tr>
-                <td>{{ session.student.roll_no }}</td>
-                <td>{{ session.student.name }}</td>
-                <td>{{ session.student.year }}</td>
-                <td>{{ session.student.batch }}</td>
-                <td>{{ session.date }}</td>
-                <td>{{ session.subject }}</td>
-                <td>{{ session.lab }}</td>
-                <td>{{ session.in_time }}</td>
-                <td>{{ session.out_time }}</td>
-                <td>
-                    <a href="{% url 'delete_session' session.id %}" onclick="return confirm('Are you sure you want to delete this session?');">Delete</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="10">No session data available.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
-</body>
-</html>
---->
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Session Summary</title>
     <style>
         body {
-            background-color: #4C516D;
-            color: #00008B;
+            background-color: #E0E0E0; /* Light grey background */
+            color: #1C1C2E; /* Dark navy blue text */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
         h1 {
-            color: #00008B;
+            color: #1C1C2E; /* Dark navy blue */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            background-color: #FFFFFF; /* White background for form */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
         }
         label, input, button, a {
-            color: #00008B;
+            color: #1C1C2E; /* Dark navy blue */
         }
         button {
-            background-color: #00008B;
-            color: #FFFFFF;
+            background-color: #1C1C2E; /* Dark navy blue */
+            color: #FFFFFF; /* White text */
             border: none;
-            padding: 5px 10px;
+            padding: 10px 20px;
             cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-right: 10px; /* Space between buttons */
         }
         button:hover {
-            background-color: #00006A;
+            background-color: #141421; /* Slightly darker navy blue */
+            transform: scale(1.05);
+        }
+        a.button {
+            background-color: #1C1C2E; /* Dark navy blue */
+            color: #FFFFFF; /* White text */
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-right: 10px; /* Space between links */
+            display: inline-block;
+        }
+        a.button:hover {
+            background-color: white; /* Slightly darker navy blue */
+            transform: scale(1.05);
         }
         a {
             text-decoration: none;
+            margin-top: 10px;
+            transition: color 0.3s ease;
         }
         a:hover {
             text-decoration: underline;
+            color: #000000; /* Black */
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
+            text-align: left;
         }
         th {
-            background-color: #00008B;
+            background-color: #1C1C2E; /* Dark navy blue */
             color: white;
         }
         tr:nth-child(even) {
@@ -116,6 +87,13 @@
         }
         tr:hover {
             background-color: #ddd;
+        }
+        td a {
+            color: #1C1C2E; /* Dark navy blue */
+            transition: color 0.3s ease;
+        }
+        td a:hover {
+            color: #141421; /* Slightly darker navy blue */
         }
     </style>
 </head>
@@ -126,10 +104,10 @@
     <form method="post" action="{% url 'session_summary' %}">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Filter Sessions</button><br>
+        <button type="submit">Filter Sessions</button>
         <!-- Add a link to export to Excel -->
-        <a href="{% url 'session_summary' %}?export=excel" class="button">Download as Excel</a><br>
-        <a href="{% url 'upload_sessions' %}">Upload Sessions</a>
+        <a href="{% url 'session_summary' %}?export=excel" class="button">Download as Excel</a>
+        <a href="{% url 'upload_sessions' %}" class="button">Upload Sessions</a>
     </form>
 
     <!-- Form to clear all session records -->
@@ -139,7 +117,7 @@
     </form>
 
     <!-- Display session data in a table -->
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>Roll No</th>

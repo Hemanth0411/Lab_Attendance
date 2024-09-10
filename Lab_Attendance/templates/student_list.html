@@ -1,135 +1,123 @@
-<!--
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Student List</title>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var yearField = document.querySelector('select[name="year"]');
-    var batchField = document.querySelector('select[name="batch"]');
-
-    function updateBatchOptions() {
-        var year = yearField.value;
-        var batchChoices = [];
-
-        if year:
-            if year == '2021-25':
-                batchChoices = [('A', 'A'), ('B', 'B'), ('C', 'C')]
-            elif year == '2024-28':
-                batchChoices = [('A', 'A'), ('B', 'B')]
-            else:
-                batchChoices = [('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')]
-
-        batchField.innerHTML = '';
-        var defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.text = 'All';
-        batchField.add(defaultOption);
-
-        batchChoices.forEach(function(batch) {
-            var option = document.createElement('option');
-            option.value = batch;
-            option.text = batch;
-            batchField.add(option);
-        });
-
-        batchField.disabled = !year;
-    }
-
-    yearField.addEventListener('change', updateBatchOptions);
-
-    // Initialize batch options based on the current year selection
-    updateBatchOptions();
-});
-</script>
-
-</head>
-<body>
-    <h2>Student List</h2>
-    <form method="get" action="{% url 'student_list' %}">
-        <label for="year">Year:</label>
-        <select name="year" id="year" onchange="this.form.submit()">
-            <option value="">All</option>
-            <option value="2021-25" {% if request.GET.year == '2021-25' %}selected{% endif %}>2021-25</option>
-            <option value="2022-26" {% if request.GET.year == '2022-26' %}selected{% endif %}>2022-26</option>
-            <option value="2023-27" {% if request.GET.year == '2023-27' %}selected{% endif %}>2023-27</option>
-            <option value="2024-28" {% if request.GET.year == '2024-28' %}selected{% endif %}>2024-28</option>
-        </select>
-        <label for="batch">Batch:</label>
-        <select name="batch" id="batch" onchange="this.form.submit()">
-            <option value="">All</option>
-            <option value="A" {% if request.GET.batch == 'A' %}selected{% endif %}>A</option>
-            <option value="B" {% if request.GET.batch == 'B' %}selected{% endif %}>B</option>
-            <option value="C" {% if request.GET.batch == 'C' %}selected{% endif %}>C</option>
-            <option value="D" {% if request.GET.batch == 'D' %}selected{% endif %}>D</option>
-        </select>
-        <noscript><button type="submit">Filter</button></noscript>
-    </form>
-    <table>
-        <tr>
-            <th>Roll No</th>
-            <th>Name</th>
-            <th>Year</th>
-            <th>Batch</th>
-            <th>Actions</th>
-        </tr>
-        {% for student in students %}
-        <tr>
-            <td>{{ student.roll_no }}</td>
-            <td>{{ student.name }}</td>
-            <td>{{ student.year }}</td>
-            <td>{{ student.batch }}</td>
-            <td>
-                <a href="{% url 'edit_student' student.roll_no %}">Edit</a>
-                <a href="{% url 'delete_student' student.roll_no %}" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7">No students found.</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
-</body>
-</html>
--->
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Student List</title>
     <style>
         body {
-            background-color: #4C516D;
-            color: #00008B;
+            background-color: #F5F5F5; /* Light white */
+            color: #1C1C2E;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
         }
         h2 {
-            color: #00008B;
+            color: #FFFFFF;
+            text-align: center;
+            padding: 20px;
+            background-color: #1C1C2E;
+            border-radius: 10px;
+            margin-bottom: 30px;
         }
-        label, select, button, table, th, td, a {
-            color: #00008B;
+        form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        label {
+            color: #1C1C2E;
+            margin-right: 10px;
+        }
+        select {
+            padding: 5px;
+            border: 2px solid #1C1C2E;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.6); /* White with 60% opacity */
+            color: #1C1C2E;
+        }
+        button {
+            padding: 10px 20px;
+            border: 2px solid #1C1C2E;
+            border-radius: 5px;
+            background-color: rgba(28, 28, 46, 0.8); /* #1C1C2E with 80% opacity */
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.6); /* White with 60% opacity */
+            color: #1C1C2E;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            overflow: hidden;
         }
         th, td {
-            border: 1px solid #00008B;
-            padding: 8px;
+            border: 1px solid #1C1C2E;
+            padding: 10px;
             text-align: left;
         }
         th {
-            background-color: #00008B;
+            background-color: #1C1C2E;
             color: #FFFFFF;
         }
+        td {
+            color: #1C1C2E;
+        }
+        tr:nth-child(even) {
+            background-color: #F5F5F5; /* Light grey */
+        }
+        tr:nth-child(odd) {
+            background-color: #FFFFFF; /* White */
+        }
         a {
-            text-decoration: none;
-        }
-        a:hover {
+    color: #1C1C2E;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+	 a:hover {
             text-decoration: underline;
+            color: #000000; /* Black */
         }
-    </style>
+
+a.edit-link {
+    background-color: #DFF0D8; /* Light greenish */
+}
+
+a.edit-link:hover {
+    background-color: #C8E5C6; /* Slightly darker greenish */
+    color: #1C1C2E;
+}
+
+a.delete-link {
+    background-color: #F2DEDE; /* Light pink */
+}
+
+a.delete-link:hover {
+    background-color: #E8C6C6; /* Slightly darker pink */
+    color: #1C1C2E;
+}
+        .back-link {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #1C1C2E;
+            border-radius: 5px;
+            background-color: rgba(28, 28, 46, 0.8); /* #1C1C2E with 80% opacity */
+            width: 200px;
+            margin: 30px auto;
+            transition: background-color 0.3s ease, color 0.3s ease;
+	    color: white;
+        }
+        .back-link:hover {
+            background-color: rgba(255, 255, 255, 0.6); /* White with 60% opacity */
+            color: #1C1C2E;
+        }
+        </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var yearField = document.querySelector('select[name="year"]');
@@ -193,6 +181,13 @@ document.addEventListener('DOMContentLoaded', function() {
         </select>
         <noscript><button type="submit">Filter</button></noscript>
     </form>
+    <!-- Clear records form -->
+    <form method="post" action="{% url 'clear_student_records' %}">
+        {% csrf_token %}
+        <input type="hidden" name="year" value="{{ request.GET.year }}">
+        <input type="hidden" name="batch" value="{{ request.GET.batch }}">
+        <button type="submit" onclick="return confirm('Are you sure you want to clear these records?');">Clear Records</button>
+    </form>
     <table>
         <tr>
             <th>Roll No</th>
@@ -208,9 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>{{ student.year }}</td>
             <td>{{ student.batch }}</td>
             <td>
-                <a href="{% url 'edit_student' student.roll_no %}">Edit</a>
-                <a href="{% url 'delete_student' student.roll_no %}" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
-            </td>
+    <a href="{% url 'edit_student' student.roll_no %}" class="edit-link">Edit</a>
+    <a href="{% url 'delete_student' student.roll_no %}" class="delete-link" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
+</td>
+
         </tr>
         {% empty %}
         <tr>
@@ -218,6 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </tr>
         {% endfor %}
     </table>
-    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+    <a href="{% url 'admin_dashboard' %}" class="back-link">Back to Dashboard</a>
 </body>
 </html>

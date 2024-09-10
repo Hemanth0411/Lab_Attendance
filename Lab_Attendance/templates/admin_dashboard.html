@@ -1,57 +1,76 @@
-<!--- <!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-</head>
-<body>
-    <h2>Admin Dashboard</h2>
-    <ul>
-        <li><a href="{% url 'add_students' %}">Add Students</a></li>
-        <li><a href="{% url 'student_list' %}">Student List</a></li>
-        <li><a href="{% url 'import_students' %}">Import Students</a></li>
-        <li><a href="{% url 'record_attendance' %}">Record Attendance</a></li>
-        <li><a href="{% url 'attendance_summary' %}">Attendance Summary</a></li>
-        <li><a href="{% url 'session_summary' %}">Session Summary</a></li>
-        <li><a href="{% url 'clear_session_records' %}">Clear Sessions</a></li>
-    </ul>
-   add a log-out link
-    <a href="{% url 'admin_logout' %}">Logout</a>
-</body>
-</html>
---->
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Admin Dashboard</title>
     <style>
         body {
-            background-color: #4C516D;
+            background-image: url('https://media.istockphoto.com/photos/computer-laboratory-picture-id955103986?k=6&m=955103986&s=612x612&w=0&h=3G4EkLI6eu-9Pxmp5xCMK7O4rkuX_VfkVTg9ItpAYZM=');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             color: #00008B;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
         h2 {
             color: #00008B;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 50%;
         }
         ul {
             list-style-type: none;
             padding: 0;
+            text-align: center;
         }
         ul li {
-            margin: 5px 0;
+            margin: 20px 0;
         }
         ul li a {
             color: #00008B;
             text-decoration: none;
+            padding: 10px 25px;
+            display: inline-block;
+            border: 2px solid #00008B;
+            border-radius: 15px;
+            width: 300px;
+            background-color: #FFFFFF;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         ul li a:hover {
-            text-decoration: underline;
+            background-color: #00008B;
+            color: #FFFFFF;
         }
-        a {
+        ul li a:active {
+            background-color: #00008B;
+            color: #FFFFFF;
+        }
+        .logout-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .logout-container a {
             color: #00008B;
             text-decoration: none;
+            padding: 10px 20px;
+            display: inline-block;
+            border: 2px solid #00008B;
+            border-radius: 15px;
+            background-color: #FFFFFF;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            width: 150px;
         }
-        a:hover {
-            text-decoration: underline;
+        .logout-container a:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+            color: #FFFFFF;
+        }
+        .logout-container a:active {
+            background-color: #00008B;
+            color: #FFFFFF;
         }
     </style>
 </head>
@@ -64,8 +83,11 @@
         <li><a href="{% url 'attendance_summary' %}">Attendance Summary</a></li>
         <li><a href="{% url 'session_summary' %}">Session Summary</a></li>
         <li><a href="{% url 'clear_session_records' %}">Clear Sessions</a></li>
+        <li><a href="{% url 'faqs' %}">FAQ'S</a></li>
     </ul>
-    <!-- Add a logout link -->
-    <a href="{% url 'admin_logout' %}">Logout</a>
+    <!-- logout link -->
+    <div class="logout-container">
+        <a href="{% url 'admin_logout' %}">Logout</a>
+    </div>
 </body>
 </html>

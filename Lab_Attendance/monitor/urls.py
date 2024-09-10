@@ -18,4 +18,6 @@ urlpatterns = [
     path('clear-session-records/', views.clear_session_records, name='clear_session_records'),
     path('upload-sessions/', views.upload_sessions, name='upload_sessions'),
     path('reduce-attendance/', views.reduce_attendance, name='reduce_attendance'),
+    path('clear_records/', views.clear_student_records, name='clear_student_records'),
+    path('faqs/', views.faqs, name='faqs'),
 ]

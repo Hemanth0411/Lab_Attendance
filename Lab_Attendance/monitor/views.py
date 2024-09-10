@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import StudentForm, AttendanceForm, YearBatchForm, SessionFilterForm, ImportStudentsForm, PartFilter, UploadSessionsForm, ReduceAttendanceForm
+from .forms import StudentForm, AttendanceForm, YearBatchForm, SessionFilterForm, ImportStudentsForm, PartFilter, \
+    UploadSessionsForm, ReduceAttendanceForm
 from .models import Student, Subject, Attendance, Session
 import logging
 from django.contrib import messages
@@ -24,19 +25,22 @@ def admin_login(request):
             else:
                 form.add_error(None, 'Invalid username or password')
         else:
-            print(form.errors)  # Print errors to console for debugging
+            print(form.errors)
     else:
         form = AuthenticationForm()
 
     return render(request, 'admin_login.html', {'form': form})
 
+
 def admin_logout(request):
     logout(request)
     return redirect('admin_login')
 
+
 @login_required
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
+
 
 @login_required
 def add_students(request):
@@ -89,13 +93,14 @@ def edit_student(request, roll_no):
         form = StudentForm(instance=student, year=student.year)
     return render(request, 'edit_student.html', {'form': form})
 
+
 @login_required
 def student_list(request):
     year = request.GET.get('year')
     batch = request.GET.get('batch')
-    
+
     students = Student.objects.all().order_by('roll_no')
-    
+
     if year:
         students = students.filter(year=year)
     if batch:
@@ -103,13 +108,36 @@ def student_list(request):
 
     return render(request, 'student_list.html', {'students': students})
 
+
+@login_required
+def clear_student_records(request):
+    if request.method == 'POST':
+        year = request.POST.get('year')
+        batch = request.POST.get('batch')
+
+        students_to_delete = Student.objects.all()
+
+        if year:
+            students_to_delete = students_to_delete.filter(year=year)
+        if batch:
+            students_to_delete = students_to_delete.filter(batch=batch)
+
+        count, _ = students_to_delete.delete()
+
+        messages.success(request, f'{count} student(s) have been deleted.')
+
+    return redirect('student_list')
+
+
 @login_required
 def delete_student(request, roll_no):
     student = get_object_or_404(Student, roll_no=roll_no)
     student.delete()
     return redirect('student_list')
 
+
 logger = logging.getLogger(__name__)
+
 
 @login_required
 def record_attendance(request):
@@ -137,21 +165,19 @@ def record_attendance(request):
                 out_time = attendance_form.cleaned_data['out_time']
                 date = attendance_form.cleaned_data['date']
                 lab = attendance_form.cleaned_data.get('lab')
-                
-                # Create and save Session instances
+
                 for roll_no in selected_roll_nos:
                     student = Student.objects.get(roll_no=roll_no)
                     Attendance.objects.create(student=student, subject=subject)
                     Session.objects.create(
-                        student=student,  # Use student ForeignKey
+                        student=student,
                         date=date,
                         subject=subject,
                         in_time=in_time,
                         out_time=out_time,
                         lab=lab
                     )
-                    
-                    # Update attendance count for the student
+
                     if subject.name == 'C_Language':
                         student.c_language_attendance += 1
                     elif subject.name == 'IT':
@@ -177,7 +203,7 @@ def record_attendance(request):
                     elif subject.name == 'DV':
                         student.dv_attendance += 1
                     student.save()
-                
+
                 logger.info("Attendance recorded successfully. Redirecting to success page.")
                 return redirect('attendance_success')
             else:
@@ -204,7 +230,6 @@ def attendance_summary(request):
             subject = session_filter_form.cleaned_data['subject']
             roll_no = session_filter_form.cleaned_data.get('roll_no')
 
-            # Filter students by year, batch, and roll number
             students = Student.objects.all()
             if year:
                 students = students.filter(year=year)
@@ -213,7 +238,6 @@ def attendance_summary(request):
             if roll_no:
                 students = students.filter(roll_no=roll_no)
 
-            # Filter attendance based on selected subject
             for student in students:
                 subjects = {
                     'C_Language': student.c_language_attendance,
@@ -235,7 +259,6 @@ def attendance_summary(request):
                     attendance_data.append((student, subs))
                     subject_column = subject_name
                 else:
-                    # Include all subjects
                     attendance_data.append((student, subjects))
 
             if subject and not attendance_data:
@@ -257,17 +280,14 @@ def reduce_attendance(request):
             roll_no = form.cleaned_data['roll_no']
             subject = form.cleaned_data['subject']
 
-            # Look up the student by roll number
             try:
                 student = Student.objects.get(roll_no=roll_no)
             except Student.DoesNotExist:
                 form.add_error('roll_no', 'Student with this roll number does not exist.')
                 return render(request, 'reduce_attendance.html', {'form': form})
 
-            # Reduce attendance for the selected student and subject
             student.reduce_attendance(subject)
-            
-            # Optionally add a success message to display on the same page
+
             success_message = "Attendance reduced successfully."
 
             return render(request, 'reduce_attendance.html', {
@@ -320,29 +340,25 @@ def session_summary(request):
 
 
 def export_to_excel(sessions):
-    # Convert querysets to DataFrame
     data = {
         'ID': [session.id for session in sessions],
         'Roll No': [session.student.roll_no for session in sessions],
         'Name': [session.student.name for session in sessions],
         'Date': [session.date for session in sessions],
-        'Subject': [session.subject.name for session in sessions],  # Accessing the name of the Subject
-        'Lab': [session.lab for session in sessions],  # Accessing the Lab attribute
+        'Subject': [session.subject.name for session in sessions],
+        'Lab': [session.lab for session in sessions],
         'In Time': [session.in_time for session in sessions],
         'Out Time': [session.out_time for session in sessions],
     }
     df = pd.DataFrame(data)
 
-    # Create an HTTP response with the Excel file
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=session_summary.xlsx'
 
-    # Write DataFrame to the response
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Session Summary')
 
     return response
-
 
 
 @login_required
@@ -358,7 +374,7 @@ def upload_sessions(request):
                 subject = Subject.objects.filter(name=row['Subject']).first()
                 if student and subject:
                     Session.objects.update_or_create(
-                        id=row['ID'], 
+                        id=row['ID'],
                         defaults={
                             'student': student,
                             'date': row['Date'],
@@ -376,23 +392,23 @@ def upload_sessions(request):
     return render(request, 'upload_sessions.html', {'form': form})
 
 
-@login_required 
+@login_required
 def delete_session(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     student = session.student
     subject_name = session.subject.name
-    
-    # Reduce the student's attendance count for the subject
+
     student.reduce_attendance(subject_name)
-    
-    # Delete the session
+
     session.delete()
-    
+
     return redirect('session_summary')
+
 
 @login_required
 def attendance_success(request):
     return render(request, 'attendance_success.html')
+
 
 @login_required
 def clear_session_records(request):
@@ -400,5 +416,10 @@ def clear_session_records(request):
         Session.objects.all().delete()
         messages.success(request, 'All session records have been cleared.')
         return redirect('session_summary')
-    
-    return render(request, 'confirm_clear.html')  # Create this template for confirmation
+
+    return render(request, 'confirm_clear.html')
+
+
+@login_required
+def faqs(request):
+    return render(request, 'faqs.html')

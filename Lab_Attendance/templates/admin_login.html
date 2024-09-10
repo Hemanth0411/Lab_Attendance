@@ -1,43 +1,99 @@
-<!--
 <!DOCTYPE html>
 <html>
 <head>
     <title>Admin Login</title>
-</head>
-<body>
-    <h2>Admin Login</h2>
-    <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log in</button>
-</form>
-</body>
-</html>
--->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Login</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         body {
-            background-color: #4C516D;
+            background-image: url('https://www.careerindia.com/college-photos/520x380/4689/campus1_1611065648.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
             color: #00008B;
+        }
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+        }
+        .logo {
+            margin-bottom: 10px;
+            width: 100px;
         }
         h2 {
             color: #00008B;
+            margin-bottom: 20px;
         }
-        button {
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .input-container i {
+            margin-right: 10px;
             color: #00008B;
         }
+        .input-container label {
+            flex: 1;
+            text-align: left;
+            color: #00008B;
+        }
+        .input-container input {
+            flex: 2;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #00008B;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, outline 0.3s ease;
+        }
+        button:hover {
+            background-color: navyblue;
+            outline: 2px solid #FFFFFF; /* Focus mode on hover */
+        }
+        button:hover {
+        transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body>
-    <h2>Admin Login</h2>
-    <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log in</button>
-</form>
+    <div class="login-container">
+        <img src="https://www.vishwavishwani.ac.in/assets/img/favicon.png" alt="Logo" class="logo">
+        <h2>Admin Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-container">
+                <i class='bx bxs-user'></i>
+                <label for="id_username">Username</label>
+                {{ form.username }}
+            </div>
+            <div class="input-container">
+                <i class='bx bxs-lock'></i>
+                <label for="id_password">Password</label>
+                {{ form.password }}
+            </div>
+            <button type="submit">Log in</button>
+        </form>
+    </div>
 </body>
 </html>
-
