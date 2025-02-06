@@ -100,6 +100,17 @@ ul {
 li {
     margin-bottom: 5px;
 }
+a {
+            text-decoration: none;
+            color: #1C1C2E; /* Dark navy blue */
+            font-size: 16px;
+            transition: color 0.3s ease;
+            text-align: center;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #000000; /* Black */
+        }
 </style>
 </head>
 <body>
@@ -235,6 +246,7 @@ li {
 
         <!-- Add more FAQ items as needed -->
     </div>
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
     <script>
         document.querySelectorAll('.faq-question').forEach(question => {
             question.addEventListener('click', function() {
