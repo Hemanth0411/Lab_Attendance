@@ -1,0 +1,22 @@
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+
+# Ignore virtual environments
+venv/
+.venv/
+
+# Ignore SQLite database files
+*.db
+*.sqlite3
+db.sqlite3
+
+# Ignore Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# Ignore sensitive files
+Read_Me.txt
+
+# Ignore VS Code settings
+.vscode/
