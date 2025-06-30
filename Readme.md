@@ -34,7 +34,6 @@ This project is a web application designed to manage lab attendance.
     ```bash
     pip install -r requirements.txt
     ```
-    *(Note: If `requirements.txt` is missing, you can generate it with `pip freeze > requirements.txt` after installing Django and any other dependencies.)*
 
 ## Running the Application
 
